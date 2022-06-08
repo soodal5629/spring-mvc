@@ -66,13 +66,34 @@ public class BasicItemController {
         return "basic/item";
     }
 
-    @PostMapping("/add")
+    //@PostMapping("/add")
     public String addItemV4(Item item){
         // @ModelAttribute 생략 가능
         itemRepository.save(item);
         // model.addAttribute("item", item); --> @ModelAttribute 사용하면 얘도 자동으로 해주므로 생략 가능
-        return "basic/item";
+        return "basic/item"; // <-- 새로고침하면 문제
     }
+
+    @PostMapping("/add")
+    public String addItemV5(Item item){
+        // @ModelAttribute 생략 가능
+        itemRepository.save(item);
+        // model.addAttribute("item", item); --> @ModelAttribute 사용하면 얘도 자동으로 해주므로 생략 가능
+        return "redirect:/basic/items/"+item.getId(); // 리다이렉트 해야함
+    }
+
+    @GetMapping("/{itemId}/edit")
+    public String editForm(@PathVariable Long itemId, Model model){
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+        return "basic/editForm";
+    }
+    @PostMapping("/{itemId}/edit")
+    public String edit(@PathVariable Long itemId, @ModelAttribute Item item){
+        itemRepository.update(itemId, item);
+        return "redirect:/basic/items/{itemId}"; //@PathVariable 에 있는것도 여기서 쓸 수 있음
+    }
+
     /*
     * 테스트용 데이터 추가
     */
